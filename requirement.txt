@@ -1,0 +1,7 @@
+pytest
+requests
+pyyaml
+psutil
+pandas==1.5.3
+openpyxl
+fabric
