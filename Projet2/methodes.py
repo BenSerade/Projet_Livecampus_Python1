@@ -3,6 +3,10 @@ import psutil
 import platform
 import socket
 import subprocess
+import pathlib
+import json
+import shutil
+import pandas as pd
 
 class info_os:
 
@@ -49,4 +53,51 @@ class info_os:
         from datetime import datetime
         boot_time = datetime.fromtimestamp(timestamp)
         return boot_time.strftime("%H:%M:%S")
+    
+class info:
+    
+
+    def ouvrir_json():
+
+        root_file = pathlib.Path(__file__).parent.resolve()
+        file_path = os.path.join(root_file, "ntt.json")
+        file_excel = os.path.join(root_file, "data.xlsx")
+
+        with open(file_path, "r") as mon_fichier:
+            data = json.load(mon_fichier)
+
+        ma_liste_a_parcourir = data["hits"]["hits"]
+        resultats = []
+
+        for item in ma_liste_a_parcourir:
+            log_level = item["_source"]["log"]["level"]            
+
+            if log_level == "warning" or log_level == "error":
+                
+                messages = item["_source"]["message"]
+                station = item["_source"]["host"]["name"]
+                
+                resultats.append({"Niveau":log_level,"Message": messages, "Station": station})
+
+                df = pd.DataFrame(resultats)
+
+                error_df = df[df["Niveau"] == "error"]
+                autres_niveau_df = df[df["Niveau"] != "error"].sort_values(by="Niveau")
+
+                df = pd.concat([error_df, autres_niveau_df])
+                df = df.reset_index(drop=True)
+
+        df.to_excel(file_excel, index=False, engine='openpyxl')
+
+                # print(log_level)
+                               
+                # print(messages)
+                # print(station)
+                # print("-" * 100)
+            
+
+    
+info.ouvrir_json()
+
+
 
