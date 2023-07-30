@@ -3,10 +3,15 @@ import psutil
 import platform
 import socket
 import subprocess
+import pathlib
+import json
+import shutil
+import pandas as pd
 from Projet2.methodes import info_os
+from Projet2.methodes import info
 
-def main():
 
+def main(): 
     # Obtenir les informations sur le système d'exploitation
     os_info = info_os.get_os_info()
 
@@ -33,7 +38,7 @@ def main():
     for pid, name, mem_usage in top_processes:
         print(f"{pid}, {name}, {mem_usage / (1024**2):.2f} MB")
 
-    print("\nEnvironment Variables:")
+        print("\nEnvironment Variables:")
     for key, value in environment_variables.items():
         print(f"{key}={value}")
 
@@ -54,5 +59,10 @@ def main():
     formatted_boot_time = info_os.format_boot_time(boot_time)
     print("\nBoot Time:", formatted_boot_time)
 
+    print("\n________________")
+    print("Extraire les données et les importer sur un fichier Excel : ")
+    info.ouvrir_json()
+
 if __name__ == "__main__":
     main()
+
